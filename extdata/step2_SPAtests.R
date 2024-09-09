@@ -254,6 +254,7 @@ if(packageVersion("SAIGE")>"1.1.4"){
   SPAGMMATtest(vcfFile=opt$vcfFile,
              vcfFileIndex=opt$vcfFileIndex,
              vcfField=opt$vcfField,
+             vczFile=opt$vczFile,
              savFile=opt$savFile,
              savFileIndex=opt$savFileIndex,
              bgenFile=opt$bgenFile,
