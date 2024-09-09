@@ -336,14 +336,15 @@ SPAGMMATtest = function(bgenFile = "",
     }
 
     nsample = length(obj.model$y)
-    cateVarRatioMaxMACVecInclude = c(cateVarRatioMaxMACVecInclude, nsample)	
-    
+    cateVarRatioMaxMACVecInclude = c(cateVarRatioMaxMACVecInclude, nsample)
+
     #in Geno.R
     objGeno = setGenoInput(bgenFile = bgenFile,
                  bgenFileIndex = bgenFileIndex,
                  vcfFile = vcfFile,   #not activate yet
                  vcfFileIndex = vcfFileIndex,
                  vcfField = vcfField,
+                 vczFile = vczFile,
                  savFile = savFile,
                  savFileIndex = savFileIndex,
                  sampleFile = sampleFile,
