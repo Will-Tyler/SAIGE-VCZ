@@ -17,6 +17,8 @@ option_list <- list(
     help="Path to vcf index file. Indexed by tabix. Path to index for vcf file by tabix, .csi file by tabix -p vcf csi file.vcf.gz"),
   make_option("--vcfField", type="character",default="DS",
     help="DS or GT, [default=DS]"),
+  make_option("--vczFile", type="character", default="",
+    help="Path to VCZ group."),
   make_option("--savFile", type="character",default="",
     help="Path to the sav file."),
   make_option("--savFileIndex", type="character",default="",
