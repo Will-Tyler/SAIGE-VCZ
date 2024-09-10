@@ -36,7 +36,30 @@ SAIGE.Marker = function(traitType,
   }
 
   ## set up an object for genotype
-  if(genoType != "vcf"){
+  if(genoType == "vcf"){
+   if(!isAnyInclude){	  
+    if(chrom == ""){
+      stop("chrom needs to be specified for single-variant assoc tests when using VCF as input\n")
+    }else{
+      set_iterator_inVcf("", chrom, 1, 250000000)
+    }
+   }
+    if(outIndex > 1){
+	move_forward_iterator_Vcf(outIndex*nMarkersEachChunk)    
+    }
+    isVcfEnd =  check_Vcf_end()
+    if(!isVcfEnd){
+    	#outIndex = 1
+    	genoIndex = rep("0", nMarkersEachChunk) 
+    	genoIndex_prev = rep("0", nMarkersEachChunk) 
+	#nChunks = outIndex + 1
+	is_marker_test = TRUE
+        i = outIndex
+    }else{
+	is_marker_test = FALSE    
+	stop("No markers are left in VCF")
+    }
+  }else{
       #markerInfo = objGeno$markerInfo
     if(LOCO){
       genoIndex = genoIndex[which(CHROM == chrom)]
@@ -70,30 +93,6 @@ SAIGE.Marker = function(traitType,
     }else{
       is_marker_test = TRUE
       i = outIndex    
-    }
-    
-  }else{
-   if(!isAnyInclude){	  
-    if(chrom == ""){
-      stop("chrom needs to be specified for single-variant assoc tests when using VCF as input\n")
-    }else{
-      set_iterator_inVcf("", chrom, 1, 250000000)
-    }
-   }
-    if(outIndex > 1){
-	move_forward_iterator_Vcf(outIndex*nMarkersEachChunk)    
-    }
-    isVcfEnd =  check_Vcf_end()
-    if(!isVcfEnd){
-    	#outIndex = 1
-    	genoIndex = rep("0", nMarkersEachChunk) 
-    	genoIndex_prev = rep("0", nMarkersEachChunk) 
-	#nChunks = outIndex + 1
-	is_marker_test = TRUE
-        i = outIndex
-    }else{
-	is_marker_test = FALSE    
-	stop("No markers are left in VCF")
     }
   }
 
