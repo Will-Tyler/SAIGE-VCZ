@@ -59,6 +59,30 @@ SAIGE.Marker = function(traitType,
 	is_marker_test = FALSE    
 	stop("No markers are left in VCF")
     }
+  } else if (genoType == "vcz") {
+    if (!isAnyInclude) {
+      if (chrom == "") {
+        stop("chrom needs to be specified for single-variant assoc tests when using VCZ as input\n")
+      } else {
+        set_iterator_inVcz("", chrom, 1, 250000000)
+      }
+    }
+
+    if (outIndex > 1) {
+      move_forward_iterator_Vcz(outIndex * nMarkersEachChunk)
+    }
+
+    isVczEnd <- check_Vcz_end()
+
+    if (!isVczEnd) {
+      genoIndex <- rep("0", nMarkersEachChunk)
+      genoIndex_prev <- rep("0", nMarkersEachChunk)
+      is_marker_test <- TRUE
+      i <- outIndex
+    } else {
+      is_marker_test <- FALSE
+	    stop("No markers are left in VCF")
+    }
   }else{
       #markerInfo = objGeno$markerInfo
     if(LOCO){
