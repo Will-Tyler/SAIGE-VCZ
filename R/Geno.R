@@ -444,6 +444,7 @@ if(FALSE){
  # }
 
   if (dosageFileType == "vcz") {
+    setVCZobjInCPP(vczFile, t_SampleInModel = sampleInModel)
     markerInfo = NULL
   }
 

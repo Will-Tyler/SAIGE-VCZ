@@ -811,6 +811,11 @@ bool isEnd = ptr_gVCFobj->check_iterator_end();
 
 }
 
+// [[Rcpp::export]]
+void setVCZobjInCPP(std::string t_vczFileName, std::vector<std::string> &t_SampleInModel) {
+  // TODO
+}
+
 
 
 //////// ---------- Main functions to set objects for different analysis methods --------- ////////////
@@ -2253,6 +2258,22 @@ bool check_Vcf_end(){
 // [[Rcpp::export]]
 void move_forward_iterator_Vcf(int i){
 	ptr_gVCFobj->move_forward_iterator(i);
+}
+
+// [[Rcpp::export]]
+void set_iterator_inVcz(std::string &variantList, std::string &chrom, int &beg_pd, int &end_pd) {
+  // TODO
+}
+
+// [[Rcpp::export]]
+bool check_Vcz_end() {
+  // TODO
+  return false;
+}
+
+// [[Rcpp::export]]
+void move_forward_iterator_Vcz(int i) {
+  // TODO
 }
 
 

@@ -139,6 +139,7 @@ void setVCFobjInCPP(std::string t_vcfFileName,
             std::string t_vcfField,
             std::vector<std::string> & t_SampleInModel);
 
+void setVCZobjInCPP(std::string t_vczFileName, std::vector<std::string> &t_SampleInModel);
 
 
 void setSAIGEobjInCPP(arma::mat & t_XVX,
@@ -186,6 +187,12 @@ void assign_conditionMarkers_factors_binary_region(
 void set_iterator_inVcf(std::string & variantList);
 
 bool check_Vcf_end();
+
+void set_iterator_inVcz(std::string& variantList, std::string &chrom, int &beg_pd, int &end_pd);
+
+bool check_Vcz_end();
+
+void move_forward_iterator_Vcz(int i);
 
 arma::vec fast_logistf_fit(arma::mat & x,
                 arma::vec & y,

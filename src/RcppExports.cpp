@@ -284,6 +284,28 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setVCZobjInCPP
+void setVCZobjInCPP(std::string t_vczFileName, std::vector<std::string>& t_SampleInModel);
+RcppExport SEXP _SAIGE_setVCZobjInCPP(SEXP t_vczFileNameSEXP, SEXP t_SampleInModelSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter<std::string>::type t_vczFileName(t_vczFileNameSEXP);
+    Rcpp::traits::input_parameter<std::vector<std::string>&>::type t_SampleInModel(t_SampleInModelSEXP);
+    setVCZobjInCPP(t_vczFileName, t_SampleInModel);
+    return R_NilValue;
+END_RCPP
+}
+// setVCZobjInCPP
+void setVCZobjInCPP(std::string t_vczFileName, std::vector<std::string>& t_SampleInModel);
+RcppExport SEXP _SAIGE_setVCZobjInCPP(SEXP t_vczFileNameSEXP, SEXP t_SampleInModelSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter<std::string>::type t_vczFileName(t_vczFileNameSEXP);
+    Rcpp::traits::input_parameter<std::vector<std::string>&>::type t_SampleInModel(t_SampleInModelSEXP);
+    setVCZobjInCPP(t_vczFileName, t_SampleInModel);
+    return R_NilValue;
+END_RCPP
+}
 // setSAIGEobjInCPP
 void setSAIGEobjInCPP(arma::mat& t_XVX, arma::mat& t_XXVX_inv, arma::mat& t_XV, arma::mat& t_XVX_inv_XV, arma::mat& t_Sigma_iXXSigma_iX, arma::mat& t_X, arma::vec& t_S_a, arma::vec& t_res, arma::vec& t_mu2, arma::vec& t_mu, arma::vec& t_varRatio_sparse, arma::vec& t_varRatio_null, arma::vec& t_cateVarRatioMinMACVecExclude, arma::vec& t_cateVarRatioMaxMACVecInclude, double t_SPA_Cutoff, arma::vec& t_tauvec, std::string t_traitType, arma::vec& t_y, std::string t_impute_method, bool t_flagSparseGRM, bool t_isFastTest, double t_pval_cutoff_for_fastTest, arma::umat& t_locationMat, arma::vec& t_valueVec, int t_dimNum, bool t_isCondition, std::vector<uint32_t>& t_condition_genoIndex, bool t_is_Firth_beta, double t_pCutoffforFirth, arma::vec& t_offset, arma::vec& t_resout);
 RcppExport SEXP _SAIGE_setSAIGEobjInCPP(SEXP t_XVXSEXP, SEXP t_XXVX_invSEXP, SEXP t_XVSEXP, SEXP t_XVX_inv_XVSEXP, SEXP t_Sigma_iXXSigma_iXSEXP, SEXP t_XSEXP, SEXP t_S_aSEXP, SEXP t_resSEXP, SEXP t_mu2SEXP, SEXP t_muSEXP, SEXP t_varRatio_sparseSEXP, SEXP t_varRatio_nullSEXP, SEXP t_cateVarRatioMinMACVecExcludeSEXP, SEXP t_cateVarRatioMaxMACVecIncludeSEXP, SEXP t_SPA_CutoffSEXP, SEXP t_tauvecSEXP, SEXP t_traitTypeSEXP, SEXP t_ySEXP, SEXP t_impute_methodSEXP, SEXP t_flagSparseGRMSEXP, SEXP t_isFastTestSEXP, SEXP t_pval_cutoff_for_fastTestSEXP, SEXP t_locationMatSEXP, SEXP t_valueVecSEXP, SEXP t_dimNumSEXP, SEXP t_isConditionSEXP, SEXP t_condition_genoIndexSEXP, SEXP t_is_Firth_betaSEXP, SEXP t_pCutoffforFirthSEXP, SEXP t_offsetSEXP, SEXP t_resoutSEXP) {
@@ -431,6 +453,39 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type i(iSEXP);
     move_forward_iterator_Vcf(i);
+    return R_NilValue;
+END_RCPP
+}
+// set_iterator_inVcz
+void set_iterator_inVcz(std::string& variantList, std::string& chrom, int& beg_pd, int& end_pd);
+RcppExport SEXP _SAIGE_set_iterator_inVcz(SEXP variantListSEXP, SEXP chromSEXP, SEXP beg_pdSEXP, SEXP end_pdSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string& >::type variantList(variantListSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type chrom(chromSEXP);
+    Rcpp::traits::input_parameter< int& >::type beg_pd(beg_pdSEXP);
+    Rcpp::traits::input_parameter< int& >::type end_pd(end_pdSEXP);
+    set_iterator_inVcz(variantList, chrom, beg_pd, end_pd);
+    return R_NilValue;
+END_RCPP
+}
+// check_Vcz_end
+bool check_Vcz_end();
+RcppExport SEXP _SAIGE_check_Vcz_end() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(check_Vcz_end());
+    return rcpp_result_gen;
+END_RCPP
+}
+// move_forward_iterator_Vcf
+void move_forward_iterator_Vcz(int i);
+RcppExport SEXP _SAIGE_move_forward_iterator_Vcz(SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    move_forward_iterator_Vcz(i);
     return R_NilValue;
 END_RCPP
 }
@@ -2277,6 +2332,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setPLINKobjInCPP", (DL_FUNC) &_SAIGE_setPLINKobjInCPP, 5},
     {"_SAIGE_setBGENobjInCPP", (DL_FUNC) &_SAIGE_setBGENobjInCPP, 5},
     {"_SAIGE_setVCFobjInCPP", (DL_FUNC) &_SAIGE_setVCFobjInCPP, 4},
+    {"_SAIGE_setVCZobjInCPP", (DL_FUNC) &_SAIGE_setVCZobjInCPP, 2},
     {"_SAIGE_setSAIGEobjInCPP", (DL_FUNC) &_SAIGE_setSAIGEobjInCPP, 31},
     {"_SAIGE_setSparseSigmaInCPP", (DL_FUNC) &_SAIGE_setSparseSigmaInCPP, 3},
     {"_SAIGE_RegionSetUpConditional_binary_InCPP", (DL_FUNC) &_SAIGE_RegionSetUpConditional_binary_InCPP, 1},
@@ -2286,6 +2342,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_set_iterator_inVcf", (DL_FUNC) &_SAIGE_set_iterator_inVcf, 4},
     {"_SAIGE_check_Vcf_end", (DL_FUNC) &_SAIGE_check_Vcf_end, 0},
     {"_SAIGE_move_forward_iterator_Vcf", (DL_FUNC) &_SAIGE_move_forward_iterator_Vcf, 1},
+    {"_SAIGE_set_iterator_inVcz", (DL_FUNC) &_SAIGE_set_iterator_inVcz, 4},
+    {"_SAIGE_check_Vcz_end", (DL_FUNC) &_SAIGE_check_Vcz_end, 0},
+    {"_SAIGE_move_forward_iterator_Vcf", (DL_FUNC) &_SAIGE_move_forward_iterator_Vcz, 1},
     {"_SAIGE_fast_logistf_fit", (DL_FUNC) &_SAIGE_fast_logistf_fit, 14},
     {"_SAIGE_closeGenoFile", (DL_FUNC) &_SAIGE_closeGenoFile, 1},
     {"_SAIGE_openOutfile", (DL_FUNC) &_SAIGE_openOutfile, 2},

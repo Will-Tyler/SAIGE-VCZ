@@ -81,7 +81,7 @@ SAIGE.Marker = function(traitType,
       i <- outIndex
     } else {
       is_marker_test <- FALSE
-	    stop("No markers are left in VCF")
+	    stop("No markers are left in VCZ")
     }
   }else{
       #markerInfo = objGeno$markerInfo
@@ -128,7 +128,7 @@ SAIGE.Marker = function(traitType,
 #time_left = system.time({
 
 
-    if(genoType != "vcf"){	
+    if(genoType != "vcf" && genoType != "vcz"){	
       tempList = genoIndexList[[i]]
       genoIndex = as.character(format(tempList$genoIndex, scientific = FALSE))
       tempChrom = tempList$chrom
@@ -156,7 +156,7 @@ SAIGE.Marker = function(traitType,
     #print(ptm)
     #print("gc()")
     #print(gc())
-    if(genoType != "vcf"){
+    if(genoType != "vcf" && genoType != "vcz"){
       cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, "/", nChunks, ": chrom ", chrom," ---- \n"))
     }else{
       cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, " :  chrom ", chrom," ---- \n"))
@@ -173,6 +173,8 @@ SAIGE.Marker = function(traitType,
 
   if(genoType == "vcf"){
     isEnd_Output =  check_Vcf_end()
+  }else if (genoType == "vcz") {
+    isEnd_Output = check_Vcz_end()
   }else{
     isEnd_Output = (i==nChunks)	
   }
@@ -211,6 +213,12 @@ SAIGE.Marker = function(traitType,
     cat("isVcfEnd ", isVcfEnd, "\n")
     if(isVcfEnd){
 	is_marker_test = FALSE	     
+    }
+  }else if(genoType == "vcz") {
+    isVczEnd = check_Vcz_end()
+    cat("isVczEnd ", isVczEnd, "\n")
+    if (isVczEnd) {
+      is_marker_test = FALSE
     }
   }else{
     if(i > nChunks){
