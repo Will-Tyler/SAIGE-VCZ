@@ -20,6 +20,7 @@
 #include "PLINK.hpp"
 #include "BGEN.hpp"
 #include "VCF.hpp"
+#include "VCZ.hpp"
 #include "SAIGE_test.hpp"
 #include "UTIL.hpp"
 #include "CCT.hpp"
@@ -34,6 +35,7 @@
 static PLINK::PlinkClass* ptr_gPLINKobj = NULL;
 static BGEN::BgenClass* ptr_gBGENobj = NULL;
 static VCF::VcfClass* ptr_gVCFobj = NULL;
+static VCZ::VczClass* ptr_gVCZobj = NULL;
 // global objects for different analysis methods
 static SAIGE::SAIGEClass* ptr_gSAIGEobj = NULL;
 //single, SAIGE
@@ -813,7 +815,7 @@ bool isEnd = ptr_gVCFobj->check_iterator_end();
 
 // [[Rcpp::export]]
 void setVCZobjInCPP(std::string t_vczFileName, std::vector<std::string> &t_SampleInModel) {
-  // TODO
+  ptr_gVCZobj = new VCZ::VczClass(t_vczFileName, t_SampleInModel);
 }
 
 
