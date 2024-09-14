@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.1...3.29)
 
+project(SAIGE)
+
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(VCZ OBJECT VCZ.cpp)
+add_library(vcz SHARED VCZ.cpp)
 
 include(FetchContent)
 
@@ -22,7 +24,9 @@ FetchContent_MakeAvailable(tensorstore)
 # Define a target that depends on TensorStore...
 
 target_link_libraries(
-    VCZ
+    vcz
     PRIVATE
     tensorstore::tensorstore tensorstore::all_drivers
 )
+
+install(TARGETS vcz DESTINATION ${CMAKE_SOURCE_DIR})
