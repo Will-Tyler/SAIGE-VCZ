@@ -16,9 +16,11 @@ OBJECTS = RcppExports.o SAIGE_fitGLMM_fast.o getMem.o VCF.o BGEN.o PLINK.o SAIGE
 
 all: $(SHLIB)
 
-$(SHLIB): ${OBJECTS} Makevars libvcz.dylib
+$(SHLIB): ${OBJECTS} Makevars libvcz$(SHLIB_EXT)
 
-libvcz.dylib: VCZ.cpp
-	cmake -S . -B ./build
+libvcz$(SHLIB_EXT): build VCZ.cpp
 	cmake --build ./build --parallel
 	cmake --install ./build
+
+build: CMakeLists.txt
+	cmake -S . -B ./build
