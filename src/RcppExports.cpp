@@ -446,15 +446,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_iterator_inVcz
-void set_iterator_inVcz(std::string& variantList, std::string& chrom, int& beg_pd, int& end_pd);
-RcppExport SEXP _SAIGE_set_iterator_inVcz(SEXP variantListSEXP, SEXP chromSEXP, SEXP beg_pdSEXP, SEXP end_pdSEXP) {
+void set_iterator_inVcz(std::string& chrom, int& beg_pd, int& end_pd);
+RcppExport SEXP _SAIGE_set_iterator_inVcz(SEXP chromSEXP, SEXP beg_pdSEXP, SEXP end_pdSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string& >::type variantList(variantListSEXP);
     Rcpp::traits::input_parameter< std::string& >::type chrom(chromSEXP);
     Rcpp::traits::input_parameter< int& >::type beg_pd(beg_pdSEXP);
     Rcpp::traits::input_parameter< int& >::type end_pd(end_pdSEXP);
-    set_iterator_inVcz(variantList, chrom, beg_pd, end_pd);
+    set_iterator_inVcz(chrom, beg_pd, end_pd);
     return R_NilValue;
 END_RCPP
 }

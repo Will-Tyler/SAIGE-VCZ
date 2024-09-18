@@ -658,7 +658,9 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
     ptr_gVCFobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo,
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec, t_isImputation);
     ptr_gVCFobj->move_forward_iterator(1);
-  }	  
+  }
+
+  // TODO: handle VCZ
  
   if(g_is_rewrite_XnonPAR_forMales){
   	processMale_XnonPAR(t_GVec, t_pd, g_X_PARregion_mat);
@@ -2263,19 +2265,18 @@ void move_forward_iterator_Vcf(int i){
 }
 
 // [[Rcpp::export]]
-void set_iterator_inVcz(std::string &variantList, std::string &chrom, int &beg_pd, int &end_pd) {
-  // TODO
+void set_iterator_inVcz(std::string &chrom, int &beg_pd, int &end_pd) {
+  ptr_gVCZobj->set_iterator(chrom, beg_pd, end_pd);
 }
 
 // [[Rcpp::export]]
 bool check_Vcz_end() {
-  // TODO
-  return false;
+  return ptr_gVCZobj->check_iterator_end();
 }
 
 // [[Rcpp::export]]
 void move_forward_iterator_Vcz(int i) {
-  // TODO
+  ptr_gVCZobj->move_forward_iterator(i);
 }
 
 
