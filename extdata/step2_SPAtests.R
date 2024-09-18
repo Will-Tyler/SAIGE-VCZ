@@ -8,6 +8,7 @@ BLASctl_installed <- require(RhpcBLASctl)
 library(optparse)
 library(data.table)
 library(methods)
+library(utils)
 print(sessionInfo())
 
 option_list <- list(
