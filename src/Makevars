@@ -19,8 +19,8 @@ all: $(SHLIB)
 
 $(SHLIB): ${OBJECTS} Makevars libvcz$(SHLIB_EXT)
 
-libvcz$(SHLIB_EXT): build VCZ.cpp
-	cmake --build ./build --parallel
+libvcz$(SHLIB_EXT): VCZ.cpp | build
+	cmake --build ./build --parallel --verbose
 	cmake --install ./build
 
 build: CMakeLists.txt
