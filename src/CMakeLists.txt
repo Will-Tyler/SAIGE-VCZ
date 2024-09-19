@@ -23,6 +23,11 @@ FetchContent_MakeAvailable(tensorstore)
 
 # Define a target that depends on TensorStore...
 
+target_compile_options(
+    vcz
+    PRIVATE
+    -O0
+)
 target_link_libraries(
     vcz
     PRIVATE
