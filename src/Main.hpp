@@ -188,7 +188,7 @@ void set_iterator_inVcf(std::string & variantList);
 
 bool check_Vcf_end();
 
-void set_iterator_inVcz(std::string &chrom, int &beg_pd, int &end_pd);
+void set_iterator_inVcz(std::string &chrom, const int beg_pd, const int end_pd);
 
 bool check_Vcz_end();
 

@@ -310,7 +310,14 @@ void mainMarkerInCPP(
    if(!isReadMarker){
       //std::cout << "isReadMarker " << isReadMarker << std::endl;
       g_markerTestEnd = true;
-      bool isEndFile = check_Vcf_end();
+      bool isEndFile = false;
+
+      if (t_genoType == "vcf") {
+        isEndFile = check_Vcf_end();
+      } else if (t_genoType == "vcz") {
+        isEndFile = check_Vcz_end();
+      }
+
       break;
     }
 
@@ -660,8 +667,18 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
     ptr_gVCFobj->move_forward_iterator(1);
   }
 
-  // TODO: handle VCZ
- 
+  if (t_genoType == "vcz") {
+      std::vector<double> t_GStdVec =
+          arma::conv_to<std::vector<double>>::from(t_GVec);
+      ptr_gVCZobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq,
+                                t_altCounts, t_missingRate, t_imputeInfo,
+                                t_isOutputIndexForMissing, t_indexForMissing,
+                                t_isOnlyOutputNonZero, t_indexForNonZero,
+                                isBoolRead, t_GStdVec, t_isImputation);
+      ptr_gVCZobj->move_forward_iterator(1);
+      t_GVec = arma::conv_to<arma::vec>::from(t_GStdVec);
+  }
+
   if(g_is_rewrite_XnonPAR_forMales){
   	processMale_XnonPAR(t_GVec, t_pd, g_X_PARregion_mat);
 	t_altCounts = arma::sum(t_GVec);
@@ -2265,7 +2282,7 @@ void move_forward_iterator_Vcf(int i){
 }
 
 // [[Rcpp::export]]
-void set_iterator_inVcz(std::string &chrom, int &beg_pd, int &end_pd) {
+void set_iterator_inVcz(std::string &chrom, const int beg_pd, const int end_pd) {
   ptr_gVCZobj->set_iterator(chrom, beg_pd, end_pd);
 }
 

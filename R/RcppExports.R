@@ -121,8 +121,8 @@ move_forward_iterator_Vcf <- function(i) {
     invisible(.Call('_SAIGE_move_forward_iterator_Vcf', PACKAGE = 'SAIGE', i))
 }
 
-set_iterator_inVcz <- function(variantlist, chrom, beg_pd, end_pd) {
-    invisible(.Call('_SAIGE_set_iterator_inVcz', PACKAGE = 'SAIGE', variantlist, chrom, beg_pd, end_pd))
+set_iterator_inVcz <- function(chrom, beg_pd, end_pd) {
+    invisible(.Call('_SAIGE_set_iterator_inVcz', PACKAGE = 'SAIGE', chrom, beg_pd, end_pd))
 }
 
 check_Vcz_end <- function() {

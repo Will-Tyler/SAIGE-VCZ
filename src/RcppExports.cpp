@@ -446,13 +446,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_iterator_inVcz
-void set_iterator_inVcz(std::string& chrom, int& beg_pd, int& end_pd);
+void set_iterator_inVcz(std::string& chrom, const int beg_pd, const int end_pd);
 RcppExport SEXP _SAIGE_set_iterator_inVcz(SEXP chromSEXP, SEXP beg_pdSEXP, SEXP end_pdSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string& >::type chrom(chromSEXP);
-    Rcpp::traits::input_parameter< int& >::type beg_pd(beg_pdSEXP);
-    Rcpp::traits::input_parameter< int& >::type end_pd(end_pdSEXP);
+    Rcpp::traits::input_parameter< int >::type beg_pd(beg_pdSEXP);
+    Rcpp::traits::input_parameter< int >::type end_pd(end_pdSEXP);
     set_iterator_inVcz(chrom, beg_pd, end_pd);
     return R_NilValue;
 END_RCPP
@@ -2330,7 +2330,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_set_iterator_inVcf", (DL_FUNC) &_SAIGE_set_iterator_inVcf, 4},
     {"_SAIGE_check_Vcf_end", (DL_FUNC) &_SAIGE_check_Vcf_end, 0},
     {"_SAIGE_move_forward_iterator_Vcf", (DL_FUNC) &_SAIGE_move_forward_iterator_Vcf, 1},
-    {"_SAIGE_set_iterator_inVcz", (DL_FUNC) &_SAIGE_set_iterator_inVcz, 4},
+    {"_SAIGE_set_iterator_inVcz", (DL_FUNC) &_SAIGE_set_iterator_inVcz, 3},
     {"_SAIGE_check_Vcz_end", (DL_FUNC) &_SAIGE_check_Vcz_end, 0},
     {"_SAIGE_move_forward_iterator_Vcf", (DL_FUNC) &_SAIGE_move_forward_iterator_Vcz, 1},
     {"_SAIGE_fast_logistf_fit", (DL_FUNC) &_SAIGE_fast_logistf_fit, 14},
