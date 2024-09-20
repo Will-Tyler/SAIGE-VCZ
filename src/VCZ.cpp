@@ -48,13 +48,16 @@ class VczClass::Impl {
         m_call_genotype_array;
 
     tensorstore::span<const Index> m_genotype_shape;
+    std::size_t m_model_sample_count;
     std::string m_chrom;
     Index m_marker_index;
     int m_startPos;
     int m_endPos;
 
    public:
-    Impl(std::string& t_vczFileName) {
+    Impl(std::string& t_vczFileName,
+         std::vector<std::string>& t_sampleInModel) {
+        m_model_sample_count = t_sampleInModel.size();
         tensorstore::Spec input_spec =
             tensorstore::Spec::FromJson(
                 {
@@ -162,7 +165,7 @@ class VczClass::Impl {
             t_isBoolRead = false;
             return;
         }
-        
+
         t_ref = "A";
         t_alt = "B";
         t_marker = "ID";
@@ -173,25 +176,37 @@ class VczClass::Impl {
         t_imputeInfo = 1.0;
 
         size_t missing_count = 0;
+        const Index sample_count =
+            std::min(m_genotype_shape[1], (Index)m_model_sample_count);
         dosages.clear();
-        dosages.resize(m_genotype_shape[1]);
+        dosages.resize(sample_count);
 
-        for (Index sample_index = 0; sample_index < m_genotype_shape[1];
+        for (Index sample_index = 0; sample_index < sample_count;
              sample_index++) {
             const int8_t a =
                 m_call_genotype_array({m_marker_index, sample_index, 0});
             const int8_t b =
                 m_call_genotype_array({m_marker_index, sample_index, 1});
 
-            // TODO: use m_posSampleInModel
-
             if (a >= 0 && b >= 0) {
                 const double dosage = a + b;
                 dosages[sample_index] = dosage;
                 t_altCounts += dosage;
+
+                if (dosage > 0) t_indexForNonZero.push_back(sample_index);
             } else {
+                dosages[sample_index] = -1;
+                t_indexForMissingforOneMarker.push_back(sample_index);
                 missing_count += 1;
             }
+        }
+
+        t_missingRate = (double)missing_count / sample_count;
+
+        if (missing_count == sample_count) {
+            t_altFreq = 0.0;
+        } else {
+            t_altFreq = t_altCounts / 2 / (sample_count - missing_count);
         }
 
         t_isBoolRead = true;
@@ -200,7 +215,7 @@ class VczClass::Impl {
 
 VczClass::VczClass(std::string t_vczFileName,
                    std::vector<std::string> t_SampleInModel) {
-    pimpl = std::make_unique<Impl>(t_vczFileName);
+    pimpl = std::make_unique<Impl>(t_vczFileName, t_SampleInModel);
 }
 
 void VczClass::set_iterator(std::string& chrom, const int start_pos,
