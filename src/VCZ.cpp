@@ -1,8 +1,10 @@
 #include "VCZ.hpp"
 
 #include <cassert>
+#include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "tensorstore/array.h"
@@ -17,65 +19,61 @@ using ::tensorstore::TensorStore;
 
 namespace VCZ {
 
-class VczClass::Impl {
+template <typename ElementType = void>
+class ChunkCacher {
+   public:
+    ChunkCacher() = default;
+
+    ChunkCacher(tensorstore::Spec input_spec) {
+        store_ = tensorstore::Open<ElementType, tensorstore::dynamic_rank,
+                                   tensorstore::ReadWriteMode::read>(input_spec)
+                     .value();
+        array_ = tensorstore::Read(store_).value();
+    }
+
+    ChunkCacher(
+        tensorstore::TensorStore<ElementType, tensorstore::dynamic_rank,
+                                 tensorstore::ReadWriteMode::read>&& store) {
+        array_ = tensorstore::Read(store).value();
+    }
+
+    template <size_t N>
+    ElementType& operator()(const Index (&indices)[N]) const {
+        return array_(indices);
+    }
+
    private:
-    tensorstore::TensorStore<int64_t, tensorstore::dynamic_rank,
+    tensorstore::TensorStore<ElementType, tensorstore::dynamic_rank,
                              tensorstore::ReadWriteMode::read>
-        m_contig_length_store;
-    tensorstore::SharedArray<int64_t, tensorstore::dynamic_rank,
+        store_;
+    tensorstore::SharedArray<ElementType, tensorstore::dynamic_rank,
                              tensorstore::offset_origin>
-        m_contig_length_array;
+        array_;
+};
 
-    tensorstore::TensorStore<int8_t, tensorstore::dynamic_rank,
-                             tensorstore::ReadWriteMode::read>
-        m_variant_contig_store;
-    tensorstore::SharedArray<int8_t, tensorstore::dynamic_rank,
-                             tensorstore::offset_origin>
-        m_variant_contig_array;
-
-    tensorstore::TensorStore<int8_t, tensorstore::dynamic_rank,
-                             tensorstore::ReadWriteMode::read>
-        m_variant_position_store;
-    tensorstore::SharedArray<int8_t, tensorstore::dynamic_rank,
-                             tensorstore::offset_origin>
-        m_variant_position_array;
-
-    tensorstore::TensorStore<int8_t, tensorstore::dynamic_rank,
-                             tensorstore::ReadWriteMode::read>
-        m_call_genotype_store;
-    tensorstore::SharedArray<int8_t, tensorstore::dynamic_rank,
-                             tensorstore::offset_origin>
-        m_call_genotype_array;
-
-    tensorstore::span<const Index> m_genotype_shape;
-    std::size_t m_model_sample_count;
-    std::string m_chrom;
-    Index m_marker_index;
-    int m_startPos;
-    int m_endPos;
-
+class VczClass::Impl {
    public:
     Impl(std::string& t_vczFileName,
          std::vector<std::string>& t_sampleInModel) {
         m_model_sample_count = t_sampleInModel.size();
-        tensorstore::Spec input_spec =
-            tensorstore::Spec::FromJson(
-                {
-                    {"driver", "zarr"},
-                    {"kvstore",
-                     {{"driver", "file"},
-                      {"path", t_vczFileName + "/call_genotype"}}},
-                })
-                .value();
-        m_call_genotype_store =
+        tensorstore::Spec input_spec;
+        input_spec = tensorstore::Spec::FromJson(
+                         {
+                             {"driver", "zarr"},
+                             {"kvstore",
+                              {{"driver", "file"},
+                               {"path", t_vczFileName + "/call_genotype"}}},
+                         })
+                         .value();
+        auto call_genotype_store =
             tensorstore::Open<int8_t, tensorstore::dynamic_rank,
                               tensorstore::ReadWriteMode::read>(
                 input_spec, tensorstore::OpenMode::open,
                 tensorstore::ReadWriteMode::read)
                 .value();
-        m_genotype_shape = m_call_genotype_store.domain().shape();
+        m_genotype_shape = call_genotype_store.domain().shape();
         m_call_genotype_array =
-            tensorstore::Read(m_call_genotype_store).value();
+            ChunkCacher<int8_t>(std::move(call_genotype_store));
 
         input_spec = tensorstore::Spec::FromJson(
                          {
@@ -85,14 +83,7 @@ class VczClass::Impl {
                                {"path", t_vczFileName + "/contig_length"}}},
                          })
                          .value();
-        m_contig_length_store =
-            tensorstore::Open<int64_t, tensorstore::dynamic_rank,
-                              tensorstore::ReadWriteMode::read>(
-                input_spec, tensorstore::OpenMode::open,
-                tensorstore::ReadWriteMode::read)
-                .value();
-        m_contig_length_array =
-            tensorstore::Read(m_contig_length_store).value();
+        m_contig_length_array = ChunkCacher<int64_t>(input_spec);
 
         input_spec = tensorstore::Spec::FromJson(
                          {
@@ -102,14 +93,7 @@ class VczClass::Impl {
                                {"path", t_vczFileName + "/variant_contig"}}},
                          })
                          .value();
-        m_variant_contig_store =
-            tensorstore::Open<int8_t, tensorstore::dynamic_rank,
-                              tensorstore::ReadWriteMode::read>(
-                input_spec, tensorstore::OpenMode::open,
-                tensorstore::ReadWriteMode::read)
-                .value();
-        m_variant_contig_array =
-            tensorstore::Read(m_variant_contig_store).value();
+        m_variant_contig_array = ChunkCacher<int8_t>(input_spec);
 
         input_spec = tensorstore::Spec::FromJson(
                          {
@@ -119,14 +103,7 @@ class VczClass::Impl {
                                {"path", t_vczFileName + "/variant_position"}}},
                          })
                          .value();
-        m_variant_position_store =
-            tensorstore::Open<int8_t, tensorstore::dynamic_rank,
-                              tensorstore::ReadWriteMode::read>(
-                input_spec, tensorstore::OpenMode::open,
-                tensorstore::ReadWriteMode::read)
-                .value();
-        m_variant_position_array =
-            tensorstore::Read(m_variant_position_store).value();
+        m_variant_position_array = ChunkCacher<int8_t>(input_spec);
 
         m_chrom = "";
         m_marker_index = 0;
@@ -211,6 +188,19 @@ class VczClass::Impl {
 
         t_isBoolRead = true;
     }
+
+   private:
+    ChunkCacher<int64_t> m_contig_length_array;
+    ChunkCacher<int8_t> m_variant_contig_array;
+    ChunkCacher<int8_t> m_variant_position_array;
+    ChunkCacher<int8_t> m_call_genotype_array;
+
+    tensorstore::span<const Index> m_genotype_shape;
+    std::size_t m_model_sample_count;
+    std::string m_chrom;
+    Index m_marker_index;
+    int m_startPos;
+    int m_endPos;
 };
 
 VczClass::VczClass(std::string t_vczFileName,
