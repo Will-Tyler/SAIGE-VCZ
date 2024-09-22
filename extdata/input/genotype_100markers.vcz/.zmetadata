@@ -10,7 +10,7 @@
         },
         "call_genotype/.zarray": {
             "chunks": [
-                10000,
+                10,
                 1000,
                 2
             ],
@@ -43,7 +43,7 @@
         },
         "call_genotype_mask/.zarray": {
             "chunks": [
-                10000,
+                10,
                 1000,
                 2
             ],
@@ -76,7 +76,7 @@
         },
         "call_genotype_phased/.zarray": {
             "chunks": [
-                10000,
+                10,
                 1000
             ],
             "compressor": {
@@ -218,7 +218,7 @@
         },
         "variant_PR/.zarray": {
             "chunks": [
-                10000
+                10
             ],
             "compressor": {
                 "blocksize": 0,
@@ -245,7 +245,7 @@
         },
         "variant_allele/.zarray": {
             "chunks": [
-                10000,
+                10,
                 2
             ],
             "compressor": {
@@ -279,7 +279,7 @@
         },
         "variant_contig/.zarray": {
             "chunks": [
-                10000
+                10
             ],
             "compressor": {
                 "blocksize": 0,
@@ -306,7 +306,7 @@
         },
         "variant_filter/.zarray": {
             "chunks": [
-                10000,
+                10,
                 1
             ],
             "compressor": {
@@ -336,7 +336,7 @@
         },
         "variant_id/.zarray": {
             "chunks": [
-                10000
+                10
             ],
             "compressor": {
                 "blocksize": 0,
@@ -367,7 +367,7 @@
         },
         "variant_id_mask/.zarray": {
             "chunks": [
-                10000
+                10
             ],
             "compressor": {
                 "blocksize": 0,
@@ -394,7 +394,7 @@
         },
         "variant_position/.zarray": {
             "chunks": [
-                10000
+                10
             ],
             "compressor": {
                 "blocksize": 0,
@@ -421,7 +421,7 @@
         },
         "variant_quality/.zarray": {
             "chunks": [
-                10000
+                10
             ],
             "compressor": {
                 "blocksize": 0,
