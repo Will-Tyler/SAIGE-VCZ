@@ -1,7 +1,6 @@
 #include "VCZ.hpp"
 
 #include <cassert>
-#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,17 +27,35 @@ class ChunkCacher {
         store_ = tensorstore::Open<ElementType, tensorstore::dynamic_rank,
                                    tensorstore::ReadWriteMode::read>(input_spec)
                      .value();
-        array_ = tensorstore::Read(store_).value();
+        cache_first_chunk();
     }
 
     ChunkCacher(
         tensorstore::TensorStore<ElementType, tensorstore::dynamic_rank,
                                  tensorstore::ReadWriteMode::read>&& store) {
-        array_ = tensorstore::Read(store).value();
+        store_ = store;
+        cache_first_chunk();
     }
 
     template <size_t N>
-    ElementType& operator()(const Index (&indices)[N]) const {
+    ElementType& operator()(const Index (&indices)[N]) {
+        if (tensorstore::Contains(array_.domain(), indices))
+            return array_(indices);
+
+        auto rank = store_.rank();
+        const auto shape = store_.domain().shape();
+        auto chunk_shape = store_.chunk_layout().value().read_chunk().shape();
+        std::vector<Index> chunk_starts(rank);
+        std::vector<Index> chunk_ends(rank);
+
+        for (Index dim_index = 0; dim_index < rank; dim_index++) {
+            const Index chunk_index = indices[dim_index] / chunk_shape[dim_index];
+            chunk_starts[dim_index] = chunk_index * chunk_shape[dim_index];
+            chunk_ends[dim_index] = chunk_starts[dim_index] + chunk_shape[dim_index];
+            chunk_ends[dim_index] = std::min(chunk_ends[dim_index], shape[dim_index]);
+        }
+
+        array_ = tensorstore::Read(store_ | tensorstore::AllDims().HalfOpenInterval(chunk_starts, chunk_ends)).value();
         return array_(indices);
     }
 
@@ -49,6 +66,19 @@ class ChunkCacher {
     tensorstore::SharedArray<ElementType, tensorstore::dynamic_rank,
                              tensorstore::offset_origin>
         array_;
+
+    void cache_first_chunk() {
+        const auto rank = store_.rank();
+        const auto shape = store_.domain().shape();
+        const auto chunk_shape = store_.chunk_layout().value().read_chunk().shape();
+        const std::vector<Index> chunk_starts(rank);
+        std::vector<Index> chunk_ends(rank);
+
+        for (Index dim_index = 0; dim_index < rank; dim_index++)
+            chunk_ends[dim_index] = std::min(shape[dim_index], chunk_shape[dim_index]);
+
+        array_ = tensorstore::Read(store_ | tensorstore::AllDims().HalfOpenInterval(chunk_starts, chunk_ends)).value();
+    }
 };
 
 class VczClass::Impl {
