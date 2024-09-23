@@ -2,8 +2,7 @@ PKG_CPPFLAGS = \
 -I ../thirdParty/cget/include \
 -I ../thirdParty/cget/lib \
 -I ../thirdParty/cget/lib64 \
--D SQLITE_ENABLE_COLUMN_METADATA -fpic -Wall -Wextra -pedantic  -DARMA_64BIT_WORD=1 -D__STDC_FORMAT_MACROS \
--g -O0 -fno-inline -fno-omit-frame-pointer
+-D SQLITE_ENABLE_COLUMN_METADATA -fpic -Wall -Wextra -pedantic  -DARMA_64BIT_WORD=1 -D__STDC_FORMAT_MACROS
 
 CXX_STD = CXX17
 
@@ -20,7 +19,7 @@ all: $(SHLIB)
 $(SHLIB): ${OBJECTS} Makevars libvcz$(SHLIB_EXT)
 
 libvcz$(SHLIB_EXT): VCZ.cpp | build
-	cmake --build ./build --parallel
+	cmake --build ./build
 	cmake --install ./build
 
 build: CMakeLists.txt

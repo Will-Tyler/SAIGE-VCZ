@@ -64,7 +64,7 @@ SAIGE.Marker = function(traitType,
       if (chrom == "") {
         stop("chrom needs to be specified for single-variant assoc tests when using VCZ as input\n")
       } else {
-        set_iterator_inVcz("", chrom, 1, 250000000)
+        set_iterator_inVcz(chrom, 1, 250000000)
       }
     }
 

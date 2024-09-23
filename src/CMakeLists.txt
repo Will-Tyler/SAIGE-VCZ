@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1...3.29)
 
 project(SAIGE)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -23,11 +23,6 @@ FetchContent_MakeAvailable(tensorstore)
 
 # Define a target that depends on TensorStore...
 
-target_compile_options(
-    vcz
-    PRIVATE
-    -O0
-)
 target_link_libraries(
     vcz
     PRIVATE
