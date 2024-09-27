@@ -29,4 +29,12 @@ target_link_libraries(
     tensorstore::tensorstore tensorstore::all_drivers
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(
+        vcz
+        PRIVATE
+        -O0
+    )
+endif()
+
 install(TARGETS vcz DESTINATION ${CMAKE_SOURCE_DIR})
