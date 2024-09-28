@@ -1,7 +1,9 @@
 #include "VCZ.hpp"
 
 #include <cassert>
+#include <functional>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,36 +29,22 @@ class ChunkCacher {
         store_ = tensorstore::Open<ElementType, tensorstore::dynamic_rank,
                                    tensorstore::ReadWriteMode::read>(input_spec)
                      .value();
-        cache_first_chunk();
     }
 
     ChunkCacher(
         tensorstore::TensorStore<ElementType, tensorstore::dynamic_rank,
                                  tensorstore::ReadWriteMode::read>&& store) {
         store_ = store;
-        cache_first_chunk();
     }
 
     template <size_t N>
-    ElementType& operator()(const Index (&indices)[N]) {
-        if (tensorstore::Contains(array_.domain(), indices))
-            return array_(indices);
+    ElementType operator()(const Index (&indices)[N]) {
+        if (current_index_ < array_size_)
+            return *(array_.data() + current_index_++);
+            
+        load_chunk(indices);
 
-        auto rank = store_.rank();
-        const auto shape = store_.domain().shape();
-        auto chunk_shape = store_.chunk_layout().value().read_chunk().shape();
-        std::vector<Index> chunk_starts(rank);
-        std::vector<Index> chunk_ends(rank);
-
-        for (Index dim_index = 0; dim_index < rank; dim_index++) {
-            const Index chunk_index = indices[dim_index] / chunk_shape[dim_index];
-            chunk_starts[dim_index] = chunk_index * chunk_shape[dim_index];
-            chunk_ends[dim_index] = chunk_starts[dim_index] + chunk_shape[dim_index];
-            chunk_ends[dim_index] = std::min(chunk_ends[dim_index], shape[dim_index]);
-        }
-
-        array_ = tensorstore::Read(store_ | tensorstore::AllDims().HalfOpenInterval(chunk_starts, chunk_ends)).value();
-        return array_(indices);
+        return (*this)(indices);
     }
 
    private:
@@ -64,20 +52,27 @@ class ChunkCacher {
                              tensorstore::ReadWriteMode::read>
         store_;
     tensorstore::SharedArray<ElementType, tensorstore::dynamic_rank,
-                             tensorstore::offset_origin>
+                             tensorstore::zero_origin>
         array_;
+    Index current_index_ = 0;
+    Index array_size_ = 0;
 
-    void cache_first_chunk() {
-        const auto rank = store_.rank();
+    template <size_t N>
+    void load_chunk(const Index (&indices)[N]) {
         const auto shape = store_.domain().shape();
         const auto chunk_shape = store_.chunk_layout().value().read_chunk().shape();
-        const std::vector<Index> chunk_starts(rank);
-        std::vector<Index> chunk_ends(rank);
 
-        for (Index dim_index = 0; dim_index < rank; dim_index++)
-            chunk_ends[dim_index] = std::min(shape[dim_index], chunk_shape[dim_index]);
+        std::vector<Index> chunk_starts(1);
+        std::vector<Index> chunk_ends(1);
 
-        array_ = tensorstore::Read(store_ | tensorstore::AllDims().HalfOpenInterval(chunk_starts, chunk_ends)).value();
+        const Index chunk_index = indices[0] / chunk_shape[0];
+        chunk_starts[0] = chunk_index * chunk_shape[0];
+        chunk_ends[0] = std::min(shape[0], chunk_starts[0] + chunk_shape[0]);
+
+        array_ = tensorstore::Read<tensorstore::zero_origin>(store_ | tensorstore::Dims(0).HalfOpenInterval(chunk_starts, chunk_ends)).value();
+        const auto array_shape = array_.shape();
+        current_index_ = 0;
+        array_size_ = std::accumulate(array_shape.begin(), array_shape.end(), 1, std::multiplies<Index>());
     }
 };
 
@@ -133,7 +128,7 @@ class VczClass::Impl {
                                {"path", t_vczFileName + "/variant_position"}}},
                          })
                          .value();
-        m_variant_position_array = ChunkCacher<int8_t>(input_spec);
+        m_variant_position_array = ChunkCacher<int32_t>(input_spec);
 
         m_chrom = "";
         m_marker_index = 0;
@@ -222,7 +217,7 @@ class VczClass::Impl {
    private:
     ChunkCacher<int64_t> m_contig_length_array;
     ChunkCacher<int8_t> m_variant_contig_array;
-    ChunkCacher<int8_t> m_variant_position_array;
+    ChunkCacher<int32_t> m_variant_position_array;
     ChunkCacher<int8_t> m_call_genotype_array;
 
     tensorstore::span<const Index> m_genotype_shape;
