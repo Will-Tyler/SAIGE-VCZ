@@ -37,14 +37,13 @@ class ChunkCacher {
         store_ = store;
     }
 
-    template <size_t N>
-    ElementType operator()(const Index (&indices)[N]) {
+    ElementType get_next_element() {
         if (current_index_ < array_size_)
             return *(array_.data() + current_index_++);
-            
-        load_chunk(indices);
 
-        return (*this)(indices);
+        load_next_chunk();
+
+        return get_next_element();
     }
 
    private:
@@ -56,23 +55,28 @@ class ChunkCacher {
         array_;
     Index current_index_ = 0;
     Index array_size_ = 0;
+    Index chunk_index_ = 0;
 
-    template <size_t N>
-    void load_chunk(const Index (&indices)[N]) {
+    void load_next_chunk() {
         const auto shape = store_.domain().shape();
-        const auto chunk_shape = store_.chunk_layout().value().read_chunk().shape();
+        const auto chunk_shape =
+            store_.chunk_layout().value().read_chunk().shape();
 
         std::vector<Index> chunk_starts(1);
         std::vector<Index> chunk_ends(1);
 
-        const Index chunk_index = indices[0] / chunk_shape[0];
-        chunk_starts[0] = chunk_index * chunk_shape[0];
+        chunk_starts[0] = chunk_index_ * chunk_shape[0];
         chunk_ends[0] = std::min(shape[0], chunk_starts[0] + chunk_shape[0]);
 
-        array_ = tensorstore::Read<tensorstore::zero_origin>(store_ | tensorstore::Dims(0).HalfOpenInterval(chunk_starts, chunk_ends)).value();
+        array_ = tensorstore::Read<tensorstore::zero_origin>(
+                     store_ | tensorstore::Dims(0).HalfOpenInterval(
+                                  chunk_starts, chunk_ends))
+                     .value();
         const auto array_shape = array_.shape();
         current_index_ = 0;
-        array_size_ = std::accumulate(array_shape.begin(), array_shape.end(), 1, std::multiplies<Index>());
+        array_size_ = std::accumulate(array_shape.begin(), array_shape.end(), 1,
+                                      std::multiplies<Index>());
+        chunk_index_ += 1;
     }
 };
 
@@ -171,7 +175,7 @@ class VczClass::Impl {
         t_ref = "A";
         t_alt = "B";
         t_marker = "ID";
-        t_pos = m_variant_position_array({m_marker_index});
+        t_pos = m_variant_position_array.get_next_element();
         t_chr = "1";
         t_altFreq = 0.0;
         t_altCounts = 0.0;
@@ -185,10 +189,8 @@ class VczClass::Impl {
 
         for (Index sample_index = 0; sample_index < sample_count;
              sample_index++) {
-            const int8_t a =
-                m_call_genotype_array({m_marker_index, sample_index, 0});
-            const int8_t b =
-                m_call_genotype_array({m_marker_index, sample_index, 1});
+            const int8_t a = m_call_genotype_array.get_next_element();
+            const int8_t b = m_call_genotype_array.get_next_element();
 
             if (a >= 0 && b >= 0) {
                 const double dosage = a + b;
