@@ -20,6 +20,7 @@
 #include "PLINK.hpp"
 #include "BGEN.hpp"
 #include "VCF.hpp"
+#include "VCZ.hpp"
 #include "SAIGE_test.hpp"
 #include "UTIL.hpp"
 #include "CCT.hpp"
@@ -34,6 +35,7 @@
 static PLINK::PlinkClass* ptr_gPLINKobj = NULL;
 static BGEN::BgenClass* ptr_gBGENobj = NULL;
 static VCF::VcfClass* ptr_gVCFobj = NULL;
+static VCZ::VczClass* ptr_gVCZobj = NULL;
 // global objects for different analysis methods
 static SAIGE::SAIGEClass* ptr_gSAIGEobj = NULL;
 //single, SAIGE
@@ -308,7 +310,14 @@ void mainMarkerInCPP(
    if(!isReadMarker){
       //std::cout << "isReadMarker " << isReadMarker << std::endl;
       g_markerTestEnd = true;
-      bool isEndFile = check_Vcf_end();
+      bool isEndFile = false;
+
+      if (t_genoType == "vcf") {
+        isEndFile = check_Vcf_end();
+      } else if (t_genoType == "vcz") {
+        isEndFile = check_Vcz_end();
+      }
+
       break;
     }
 
@@ -656,8 +665,20 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
     ptr_gVCFobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo,
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec, t_isImputation);
     ptr_gVCFobj->move_forward_iterator(1);
-  }	  
- 
+  }
+
+  if (t_genoType == "vcz") {
+      std::vector<double> t_GStdVec =
+          arma::conv_to<std::vector<double>>::from(t_GVec);
+      ptr_gVCZobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq,
+                                t_altCounts, t_missingRate, t_imputeInfo,
+                                t_isOutputIndexForMissing, t_indexForMissing,
+                                t_isOnlyOutputNonZero, t_indexForNonZero,
+                                isBoolRead, t_GStdVec, t_isImputation);
+      ptr_gVCZobj->move_forward_iterator(1);
+      t_GVec = arma::conv_to<arma::vec>::from(t_GStdVec);
+  }
+
   if(g_is_rewrite_XnonPAR_forMales){
   	processMale_XnonPAR(t_GVec, t_pd, g_X_PARregion_mat);
 	t_altCounts = arma::sum(t_GVec);
@@ -809,6 +830,11 @@ void setVCFobjInCPP(std::string t_vcfFileName,
 
 bool isEnd = ptr_gVCFobj->check_iterator_end();
 
+}
+
+// [[Rcpp::export]]
+void setVCZobjInCPP(std::string t_vczFileName, std::vector<std::string> &t_SampleInModel) {
+  ptr_gVCZobj = new VCZ::VczClass(t_vczFileName, t_SampleInModel);
 }
 
 
@@ -2253,6 +2279,21 @@ bool check_Vcf_end(){
 // [[Rcpp::export]]
 void move_forward_iterator_Vcf(int i){
 	ptr_gVCFobj->move_forward_iterator(i);
+}
+
+// [[Rcpp::export]]
+void set_iterator_inVcz(std::string &chrom, const int beg_pd, const int end_pd) {
+  ptr_gVCZobj->set_iterator(chrom, beg_pd, end_pd);
+}
+
+// [[Rcpp::export]]
+bool check_Vcz_end() {
+  return ptr_gVCZobj->check_iterator_end();
+}
+
+// [[Rcpp::export]]
+void move_forward_iterator_Vcz(int i) {
+  ptr_gVCZobj->move_forward_iterator(i);
 }
 
 

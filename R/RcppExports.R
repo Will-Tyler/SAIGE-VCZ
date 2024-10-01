@@ -81,6 +81,10 @@ setVCFobjInCPP <- function(t_vcfFileName, t_vcfFileIndex, t_vcfField, t_SampleIn
     invisible(.Call('_SAIGE_setVCFobjInCPP', PACKAGE = 'SAIGE', t_vcfFileName, t_vcfFileIndex, t_vcfField, t_SampleInModel))
 }
 
+setVCZobjInCPP <- function(t_vczFileName, t_SampleInModel) {
+    invisible(.Call('_SAIGE_setVCZobjInCPP', PACKAGE = 'SAIGE', t_vczFileName, t_SampleInModel))
+}
+
 setSAIGEobjInCPP <- function(t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_Sigma_iXXSigma_iX, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio_sparse, t_varRatio_null, t_cateVarRatioMinMACVecExclude, t_cateVarRatioMaxMACVecInclude, t_SPA_Cutoff, t_tauvec, t_traitType, t_y, t_impute_method, t_flagSparseGRM, t_isFastTest, t_pval_cutoff_for_fastTest, t_locationMat, t_valueVec, t_dimNum, t_isCondition, t_condition_genoIndex, t_is_Firth_beta, t_pCutoffforFirth, t_offset, t_resout) {
     invisible(.Call('_SAIGE_setSAIGEobjInCPP', PACKAGE = 'SAIGE', t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_Sigma_iXXSigma_iX, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio_sparse, t_varRatio_null, t_cateVarRatioMinMACVecExclude, t_cateVarRatioMaxMACVecInclude, t_SPA_Cutoff, t_tauvec, t_traitType, t_y, t_impute_method, t_flagSparseGRM, t_isFastTest, t_pval_cutoff_for_fastTest, t_locationMat, t_valueVec, t_dimNum, t_isCondition, t_condition_genoIndex, t_is_Firth_beta, t_pCutoffforFirth, t_offset, t_resout))
 }
@@ -115,6 +119,18 @@ check_Vcf_end <- function() {
 
 move_forward_iterator_Vcf <- function(i) {
     invisible(.Call('_SAIGE_move_forward_iterator_Vcf', PACKAGE = 'SAIGE', i))
+}
+
+set_iterator_inVcz <- function(chrom, beg_pd, end_pd) {
+    invisible(.Call('_SAIGE_set_iterator_inVcz', PACKAGE = 'SAIGE', chrom, beg_pd, end_pd))
+}
+
+check_Vcz_end <- function() {
+    .Call('_SAIGE_check_Vcz_end', PACKAGE = 'SAIGE')
+}
+
+move_forward_iterator_Vcz <- function(i) {
+    invisible(.Call('_SAIGE_move_forward_iterator_Vcz', PACKAGE = 'SAIGE', i))
 }
 
 fast_logistf_fit <- function(x, y, weight, offset, firth, col_fit, init, maxit, maxstep, maxhs, lconv, gconv, xconv, isfirthconverge) {

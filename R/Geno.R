@@ -24,6 +24,7 @@ checkGenoInput = function(bgenFile = "",
                  vcfFile = "",
 		 vcfFileIndex = "",
                  vcfField = "DS",
+                 vczFile = "",
                  savFile = "",
 		 savFileIndex = "",
                  sampleFile = "",
@@ -60,6 +61,9 @@ checkGenoInput = function(bgenFile = "",
         }
         dosageFileType = "vcf"
 
+    }else if (vczFile != "") {
+      Check_File_Exist(vczFile)
+      dosageFileType <- "vcz"
     }else if (savFile != "") {
         Check_File_Exist(savFile, "savFile")
 	#Check_File_Exist(savFileIndex, "savFileIndex")
@@ -124,6 +128,7 @@ setGenoInput = function(bgenFile = "",
                  vcfFile = "",
                  vcfFileIndex = "",
                  vcfField = "DS",
+                 vczFile = "",
                  savFile = "",
                  savFileIndex = "",
                  sampleFile = "",
@@ -142,6 +147,7 @@ setGenoInput = function(bgenFile = "",
                  vcfFile = vcfFile,
                  vcfFileIndex = vcfFileIndex,
                  vcfField = vcfField,
+                 vczFile = vczFile,
                  savFile = savFile,
                  savFileIndex = savFileIndex,
                  bedFile = bedFile,
@@ -436,6 +442,11 @@ if(FALSE){
  # if(nrow(markerInfo) != 0){
  #   markerInfo[,POS:=NULL]
  # }
+
+  if (dosageFileType == "vcz") {
+    setVCZobjInCPP(vczFile, t_SampleInModel = sampleInModel)
+    markerInfo = NULL
+  }
 
   genoList = list(markerInfo = markerInfo, genoType = dosageFileType, anyInclude = anyInclude)
   return(genoList)

@@ -6,6 +6,7 @@
 #' @param vcfFile character. Path to vcf file
 #' @param vcfFileIndex character. Path to vcf index file. Indexed by tabix. Path to index for vcf file by tabix, .csi file using 'tabix --csi -p vcf file.vcf.gz'
 #' @param vcfField character. genotype field in vcf file to use. "DS" for dosages or "GT" for genotypes. By default, "DS".
+#' @param vczFile character. Path to VCZ group.
 #' @param savFile character. Path to sav file
 #' @param savFileIndex character. Path to index for sav file .s1r
 #' @param bedFile character. Path to bed file (PLINK)
@@ -64,6 +65,7 @@ SPAGMMATtest = function(bgenFile = "",
                  vcfFile = "",
                  vcfFileIndex = "",
                  vcfField = "DS",
+                 vczFile = "",
                  savFile = "",
                  savFileIndex = "",
                  bedFile="",
@@ -334,14 +336,15 @@ SPAGMMATtest = function(bgenFile = "",
     }
 
     nsample = length(obj.model$y)
-    cateVarRatioMaxMACVecInclude = c(cateVarRatioMaxMACVecInclude, nsample)	
-    
+    cateVarRatioMaxMACVecInclude = c(cateVarRatioMaxMACVecInclude, nsample)
+
     #in Geno.R
     objGeno = setGenoInput(bgenFile = bgenFile,
                  bgenFileIndex = bgenFileIndex,
                  vcfFile = vcfFile,   #not activate yet
                  vcfFileIndex = vcfFileIndex,
                  vcfField = vcfField,
+                 vczFile = vczFile,
                  savFile = savFile,
                  savFileIndex = savFileIndex,
                  sampleFile = sampleFile,
